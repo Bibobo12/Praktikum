@@ -1,0 +1,22 @@
+MODULE user(other)
+VAR
+  state : {idle, entering, critical, exiting};
+INIT
+  state = idle;
+ASSIGN
+  next(state):=
+     case 
+       state = idle : entering;
+       state = entering & !(other.state=entering) : critical;
+       state = critical : exiting;
+       state = exiting : idle;
+  TRUE: state;
+  esac;
+MODULE main
+VAR
+ p1 : user(p2);
+ p2 : user(p1);
+
+SPEC AG !(p1.state = critical & p2.state = critical)
+SPEC AG AF p1.state = critical
+SPEC AG AF p2.state = critical

@@ -1,0 +1,72 @@
+MODULE p1 (other)
+VAR
+	y : {undef, true, false};
+	t : {undef, true, false};
+	prog_line : 1..7;
+INIT
+	y = undef & t = undef & prog_line = 1;
+ASSIGN
+	next(prog_line) :=
+case
+	prog_line = 5 & y = other.y : prog_line;
+	prog_line >= 7 : 1;
+	TRUE : prog_line + 1;
+	esac;
+	next(t) :=
+		case
+			prog_line = 1 & other.y = false : false;
+			prog_line = 1 & other.y != false : true;
+			prog_line = 3 & other.y != undef : other.y;
+			prog_line = 7 : undef;
+			TRUE : t;
+			esac;
+	next(y) :=
+		case
+			prog_line = 2 | prog_line = 4: t;
+			prog_line = 7 : undef;
+			TRUE : y;
+			esac;
+
+MODULE p2 (other)
+VAR
+	y : {undef, true, false};
+	t : {undef, true, false};
+	prog_line : 1..7;
+INIT
+	y = undef & t = undef & prog_line = 1;
+ASSIGN
+	next(prog_line) :=
+case
+	prog_line = 5 & y != other.y : prog_line;
+	prog_line >= 7 : 1;
+	TRUE : prog_line + 1;
+	esac;
+	next(t) :=
+		case
+			prog_line = 1 & other.y = true  :  false;
+			prog_line = 1 & other.y != true :  true;
+			prog_line = 3 & other.y = true :  {false,undef};
+			prog_line = 3 & other.y = false : {true,undef};
+			prog_line = 3 & other.y = undef : {true,false};
+			prog_line = 7 : undef;
+			TRUE : t;
+			esac;
+	next(y) :=
+		case
+			prog_line = 2 | prog_line = 4: t;
+			prog_line = 7 : undef;
+			TRUE : other.y;
+			esac;
+
+MODULE main
+VAR
+	proc1 : process p1(proc2);
+	proc2 : process p2(proc1);
+SPEC AG (!(proc1.prog_line = 6 & proc2.prog_line = 6))
+SPEC AG EF (proc1.prog_line = 6)
+SPEC AG EF (proc2.prog_line = 6)
+		
+
+
+
+	

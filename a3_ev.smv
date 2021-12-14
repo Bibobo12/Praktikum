@@ -1,0 +1,80 @@
+MODULE erzeuger(semaphore, buffer)
+VAR
+    state : {idle, entering, producing, exiting};
+INIT
+    state = idle;
+ASSIGN
+    next(state) :=
+case
+    state = idle : entering;
+    state = entering & !semaphore & buffer < 5 : producing;
+    state = producing : exiting;
+    state = exiting : idle;
+    TRUE : state;
+    esac;
+    next(semaphore) :=
+        case
+            next(state) = producing : TRUE;
+            state = exiting : FALSE;
+            TRUE : semaphore;
+        esac;
+    next(buffer) :=
+        case
+            state = producing & buffer < 5 : buffer + 1;
+            TRUE : buffer;
+        esac;
+FAIRNESS running
+
+MODULE verbraucher(semaphore, buffer)
+VAR
+    state : {idle, entering, consuming, exiting};
+INIT
+    state = idle;
+ASSIGN
+    next(state) :=
+        case
+            state = idle : entering;
+            state = entering & !semaphore & buffer > 0 : consuming;
+            state = consuming : exiting;
+            state = exiting : idle;
+            TRUE : state;
+        esac;
+    next(semaphore) :=
+        case
+            next(state) = consuming : TRUE;
+            state = exiting : FALSE;
+            TRUE : semaphore;
+        esac;
+    next(buffer) :=
+        case
+            state = consuming & buffer > 0 : buffer - 1;
+            TRUE : buffer;
+        esac;
+FAIRNESS running
+
+MODULE main
+VAR
+    semaphore : boolean;
+    buffer : 0..5;
+    producer : process erzeuger(semaphore, buffer);
+    consumer : process verbraucher(semaphore, buffer);
+INIT
+    semaphore = FALSE & buffer = 0;
+--SICHERHEIT 
+SPEC AG (((producer.state=producing) -> !(consumer.state=consuming)) | 
+            ((consumer.state=consuming) -> !(producer.state=producing)))
+--SICHERHEIT (Optional) xy 
+SPEC AG !(producer.state=producing & consumer.state=consuming)
+--LEBENDIGKEIT x
+SPEC AG (producer.state = entering -> AF (producer.state = producing))
+SPEC AG (consumer.state = entering -> AF (consumer.state = consuming))
+SPEC AG AF (producer.state = producing)
+SPEC AG AF (consumer.state = consuming)
+
+--LEBENDIGKEIT (Optional) Unterschied zwischen AX und AF hier? y
+SPEC AG (AF producer.state=producing) & AG (AF consumer.state=consuming)
+SPEC AG(producer.state=entering 
+            -> AX (producer.state=producing))
+
+SPEC AG(consumer.state=entering 
+            -> AX (consumer.state=consuming))
