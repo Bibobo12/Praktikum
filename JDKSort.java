@@ -7,7 +7,8 @@
 
 public class JDKSort {
     public int[] sort(int[] toSort) {
-        if ( toSort ==null ) return toSort;
+        if ( toSort ==null )
+            return toSort;
         sort1(toSort, 0, toSort.length);
         return toSort;
     }

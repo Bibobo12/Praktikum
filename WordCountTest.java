@@ -37,6 +37,18 @@ private WordCount wc;
         String path ="C:\\Arhiva\\FAU\\1 Praktikum\\Blatt09\\test_empty.txt";
         assertEquals(correctAnswer,wc.countWords(path),0);
     }
+    @Test
+    public void testNumberOfWordsEmpty_exception(){
+        int correctAnswer = 0;
+        String path ="C:\\Arhiva\\FAU\\1 Praktikum\\Blatt09\\incorrect_path.txt";
+        assertEquals(correctAnswer,wc.countWords(path),0);
+    }
+    @Test
+    public void testNumberOfLinesEmpty_exception(){
+        int correctAnswer = 0;
+        String path ="C:\\Arhiva\\FAU\\1 Praktikum\\Blatt09\\incorrect_path.txt";
+        assertEquals(correctAnswer,wc.countLines(path),0);
+    }
 
 
 

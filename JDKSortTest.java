@@ -52,6 +52,46 @@ public class JDKSortTest {
         int[] jdksorted = jsort.sort(unsorted);
         assertArrayEquals(sorted,jdksorted);
     }
-
-
+    // Before: 68% Coverage -- Blatt 10 -->
+    @Test
+    public void testBigArray_anweisungsueberdeckung(){
+        int min = Integer.MIN_VALUE;
+        int max = Integer.MAX_VALUE;
+        int[] unsorted = {-9,5,4,-6,2,min,3,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+                ,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                max};
+        int[] sorted = {min,-9,-6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+                ,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,4,5,7,7,max};
+        int[] jdksorted = jsort.sort(unsorted);
+        assertArrayEquals(sorted,jdksorted);
+    }
+    @Test
+    public void testBigArray_verzweigungsueberdeckung(){
+        int min = Integer.MIN_VALUE;
+        int max = Integer.MAX_VALUE;
+        int[] unsorted = {9,9,9,9,9,9,9,9};
+        int[] sorted = {9,9,9,9,9,9,9,9};
+        int[] jdksorted = jsort.sort(unsorted);
+        assertArrayEquals(sorted,jdksorted);
+    }
+    @Test
+    public void testBigArray_verzweigungsueberdeckung2(){
+        int min = Integer.MIN_VALUE;
+        int max = Integer.MAX_VALUE;
+        int[] unsorted = {0,0,0,0,10,0,0,0};
+        int[] sorted = {0,0,0,0,0,0,0,10};
+        int[] jdksorted = jsort.sort(unsorted);
+        assertArrayEquals(sorted,jdksorted);
+    }
+    @Test
+    public void testNullArray(){
+        int[] unsorted = null;
+        int[] sorted = null;
+        //int[] true_unsorted = {4,9,6,8,3,2,1,7,5};
+        int[] jdksorted = jsort.sort(unsorted);
+        for (int i = 0; i < unsorted.length; i++) {
+            assertEquals(sorted[i],jdksorted[i]);
+        }
+        assertArrayEquals(sorted,jdksorted);
+    }
 }
