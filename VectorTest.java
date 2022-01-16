@@ -165,7 +165,205 @@ public class VectorTest {
         vector.indexOf(1,0);
         vector.indexOf(1,5);
     }
+    @Test
+    public void testIndexOf_2par_for(){
+        vector.insertElementAt(0,0);
+        vector.insertElementAt(0,1);
+        vector.indexOf(0,0);
+        vector.indexOf(10,0);
+
+    }
 //65% coverage
+    @Test
+    public void testLastIndexOf_1par(){
+        vector.insertElementAt(0,0);
+        vector.insertElementAt(0,1);
+
+        vector.lastIndexOf(null);
+        vector.insertElementAt(null,1);
+        vector.lastIndexOf(null);
+        vector.lastIndexOf(10);
+        vector.lastIndexOf(0);
+
+    }
+    @Test (expected = IndexOutOfBoundsException.class)
+    public void testLastIndexOf_2par(){
+        vector.lastIndexOf(1,10);
+    }
+
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testElementAt(){
+        vector.insertElementAt(0,0);
+        vector.elementAt(2);
+
+    }
+    @Test
+    public void testElementAt_2(){
+        vector.insertElementAt(0,0);
+        vector.insertElementAt(1,1);
+        vector.elementAt(0);
+
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testElementAt_3(){
+        vector.insertElementAt(0,0);
+        vector.insertElementAt(1,1);
+        vector.elementAt(-1);
+
+    }
+    @Test (expected = NoSuchElementException.class)
+    public void testFirstElement2(){
+        vector.elementCount=-2;
+        vector.firstElement();
+
+    }
+    @Test (expected = NoSuchElementException.class)
+    public void testLastElement2(){
+        vector.elementCount=0;
+        vector.lastElement();
+    }
+    @Test
+    public void testLastElement3(){
+        vector.elementCount=2;
+        vector.lastElement();
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testSetElementAt(){
+        vector.elementCount=2;
+        vector.setElementAt(null,5);
+
+    }
+    @Test
+    public void testSetElementAt2(){
+        vector.elementCount=2;
+        vector.setElementAt(null,1);
+
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testRemoveElementAt(){
+        vector.elementCount=2;
+        vector.removeElementAt(5);
+
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testRemoveElementAt2(){
+        vector.elementCount=2;
+        vector.removeElementAt(-1);
+
+    }
+    @Test
+    public void testRemoveElementAt3(){
+        vector.elementCount=2;
+        vector.removeElementAt(1);
+
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testInsertElementAt(){
+        vector.elementCount=2;
+        vector.insertElementAt(null,5);
+
+    }
+    @Test
+    public void testAddElement(){
+        vector.addElement(null);
+
+    }
+    @Test
+    public void testRemoveElement2(){
+        vector.removeElement(null);
+        vector.insertElementAt(0,0);
+        vector.insertElementAt(0,1);
+        vector.insertElementAt(0,2);
+        vector.removeElement(0);
+    }
+    @Test
+    public void testRemoveAllElements(){
+        vector.elementCount=2;
+        vector.removeAllElements();
+    }
+    @Test
+    public void testclone(){
+        vector.clone();
+
+    }
+    @Test (expected = NullPointerException.class)
+    public void testToArray(){
+        Object[] x = null;
+        vector.toArray(x);
+
+    }
+    @Test
+    public void testToArray2(){
+        vector.elementCount=10;
+        Object[] x = {null,null,2};
+        vector.toArray(x);
+
+    }
+    @Test
+    public void testToArray3(){
+        vector.elementCount=1;
+        Object[] x = {null,null,2};
+        vector.toArray(x);
+
+    }
+    @Test
+    public void testToArray4(){
+        vector.toArray();
+
+    }
+    @Test
+    public void testget(){
+        vector.elementCount=2;
+        vector.get(0);
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testget2(){
+        vector.elementCount=2;
+        vector.get(10);
+    }
+    @Test
+    public void testSet(){
+        vector.elementCount=2;
+        vector.set(0,null);
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testSet2(){
+        vector.elementCount=2;
+        vector.set(10,null);
+    }
+    @Test
+    public void testadd(){
+        vector.add(null);
+    }
+    @Test
+    public void testremove(){
+        vector.remove(null);
+    }
+    @Test
+    public void testadd_2par(){
+        vector.add(2,null);
+    }
+    @Test (expected = ArrayIndexOutOfBoundsException.class)
+    public void testremove2(){
+        vector.elementCount=2;
+        vector.remove(6);
+    }
+    @Test
+    public void testremove3(){
+        vector.elementCount=2;
+        vector.remove(0);
+    }
+    @Test
+    public void testclear(){
+        vector.clear();
+    }
+    @Test
+    public void testcontainsAll(){
+        LinkedList<Integer> x = null;
+        vector.containsAll(x);
+    }
+
+
 
 
 }
