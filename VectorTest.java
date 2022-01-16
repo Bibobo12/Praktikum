@@ -353,17 +353,94 @@ public class VectorTest {
         vector.elementCount=2;
         vector.remove(0);
     }
+
     @Test
     public void testclear(){
         vector.clear();
     }
-    @Test
+    @Test (expected = NullPointerException.class)
     public void testcontainsAll(){
         LinkedList<Integer> x = null;
         vector.containsAll(x);
     }
-
-
+    @Test
+    public void testaddAll(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.addAll(x);
+    }
+    @Test
+    public void testaddAll_2par(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.addAll(2,x);
+    }
+    @Test (expected = IndexOutOfBoundsException.class)
+    public void testaddAll_2par_2(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.addAll(-2,x);
+    }
+    @Test
+    public void testaddAll_2par_3(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.addAll(1,x);
+    }
+    @Test
+    public void testaddAll_2par_4(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.addAll(5,x);
+    }
+    @Test
+    public void testaddAll_2par_5(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        vector.addAll(0,x);
+    }
+    @Test
+    public void testremoveAll(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.removeAll(x);
+    }
+    @Test
+    public void testretainAll(){
+        vector.elementCount=2;
+        LinkedList<Integer> x = new LinkedList<>();
+        x.add(1);
+        x.add(2);
+        vector.retainAll(x);
+    }
+    @Test
+    public void testEquals(){
+        vector.equals(null);
+    }
+    @Test
+    public void testhashCode(){
+        vector.hashCode();
+    }
+    @Test
+    public void testtoString(){
+        vector.toString();
+    }
+    @Test
+    public void testsubList(){
+        vector.subList(1,2);
+    }
 
 
 }
