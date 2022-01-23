@@ -1,0 +1,201 @@
+MODULE Forderband(sensor, kran, arm2)
+VAR
+	zustand: {BereitZumLaden, InEntladeposGehend,
+		BereitZumEntladen, Entladend};
+ASSIGN
+	next(zustand) := case
+	zustand = BereitZumLaden &
+		arm2.zustand = abfuhraus     : InEntladeposGehend;
+	zustand = InEntladeposGehend &
+		sensor.zustand = on                  : BereitZumEntladen;
+	zustand = BereitZumEntladen &
+		kran.zustand = BereitZumLaden : Entladend;
+	zustand = Entladend &
+		sensor.zustand = off                   : BereitZumLaden;
+	TRUE: zustand;
+	esac;
+
+MODULE Zufuhrband(sensor, kran, hebebuehne)
+VAR
+	zustand: {BereitZumLaden, InEntladeposGehend,
+		BereitZumEntladen, Entladend};
+ASSIGN
+	next(zustand) := case
+	zustand = BereitZumLaden &
+		kran.zustand = BereitZumEntladen     : InEntladeposGehend;
+	zustand = InEntladeposGehend &
+		sensor.zustand = on                  : BereitZumEntladen;
+	zustand = BereitZumEntladen &
+		hebebuehne.zustand = BereitZumLaden : Entladend;
+	zustand = Entladend &
+		sensor.zustand = off                   : BereitZumLaden;
+	TRUE: zustand;
+	esac;
+
+
+
+MODULE Hebebuehne(arm1, lichtschranke)
+VAR
+	zustand: {BereitZumLaden, Laden, Entladend, BereitZumEntladen};
+	
+ASSIGN
+	next(zustand) := case
+	zustand = BereitZumLaden & 
+		lichtschranke.zustand = on : Laden;
+	zustand = Laden & 
+		lichtschranke.zustand = off : BereitZumEntladen;
+	zustand = BereitZumEntladen &
+		arm1.zustand = hebeaus : Entladend;
+	zustand = Entladend &
+		arm1.zustand = hebeein: BereitZumLaden;
+	TRUE: zustand;
+	esac;
+
+
+MODULE Presse(arm1, arm2)
+VAR
+	zustand: {Ladeposition, beladen, pressen, Entladeposition, entladen};
+
+ASSIGN
+	next(zustand) := case
+	zustand = Ladeposition & arm1.zustand = presseaus : beladen;
+	zustand = beladen & arm1.zustand = presseein:  pressen;
+	zustand = pressen : Entladeposition;
+	zustand = Entladeposition & arm2.zustand = presseaus : entladen;
+	zustand = entladen & arm2.zustand = presseein : Ladeposition;
+	TRUE: zustand;
+	esac;
+
+MODULE Sensor
+VAR
+	zustand: {on, off};
+ASSIGN
+	next(zustand) := {on, off};
+
+MODULE Arm1
+VAR
+	zustand: {hebeaus, hebeein, presseaus, presseein}; --hebeaus = aktion bezueglich Hebebuehne, hebeein = fertig mit Hebebuehne
+	magnet: {on, off};
+ASSIGN
+	next(zustand) := case
+	zustand = hebeaus : hebeein;
+	zustand = hebeein : presseaus;
+	zustand = presseaus : presseein;
+	zustand = presseein : hebeaus;
+	TRUE: zustand;
+	esac;
+	next(magnet):= case
+	zustand = hebeaus & magnet = on : on;
+	zustand = hebeein & magnet = on : off;
+	zustand = presseaus & magnet = off : off;
+	zustand = presseein & magnet = off : on;
+	TRUE: magnet;
+	esac;
+
+MODULE Arm2
+VAR
+	zustand: {presseaus, presseein, abfuhraus, abfuhrein};
+	magnet: {on, off};
+ASSIGN
+	next(zustand) := case 
+	zustand = presseaus : presseein;
+	zustand = presseein : abfuhraus;
+	zustand = abfuhraus : abfuhrein;
+	zustand = abfuhrein : presseaus;
+	TRUE: zustand;
+	esac;	
+	next(magnet):= case
+	zustand = presseaus & magnet = on : on;
+	zustand = presseein & magnet = on : off; --arm führt sich ein bezueglich Presse dann kann Magnet in "off" Zst gehen
+	zustand = abfuhraus & magnet = off : off;
+	zustand = abfuhrein & magnet = off : on;
+	TRUE: magnet;
+	esac;
+MODULE Kran(lichtschranke)
+VAR
+	zustand: {BereitZumLaden, geladen, MagnetOnAbtransport, 
+MagnetOnZufuhr, BereitZumEntladen, entladen, MagnetOffZufuhr, MagnetOffAbtransport};
+	magnet: {on, off};
+	greifer: {down, up};
+	kranposition: {abfuhr, zufuhr};
+ASSIGN
+	next(zustand) :=
+	case
+		zustand = BereitZumLaden & lichtschranke.zustand = on : geladen;
+		zustand = geladen : MagnetOnAbtransport;
+		zustand = MagnetOnAbtransport : MagnetOnZufuhr;
+		zustand = MagnetOnZufuhr : BereitZumEntladen;
+		zustand = BereitZumEntladen : entladen;
+		zustand = entladen : MagnetOffZufuhr;
+		zustand = MagnetOffZufuhr : MagnetOffAbtransport;
+		zustand = MagnetOffAbtransport: BereitZumLaden;
+	TRUE: zustand;
+	esac;
+	next(magnet) :=
+	case
+		zustand = BereitZumLaden & lichtschranke.zustand = on : on;
+		zustand = geladen : on;
+		zustand = MagnetOnAbtransport : on;
+		zustand = MagnetOnZufuhr : on;
+		zustand = BereitZumEntladen : off;
+		zustand = entladen : off;
+		zustand = MagnetOffZufuhr : off;
+		zustand = MagnetOffAbtransport: off;
+	TRUE: magnet;
+	esac;
+	next(greifer) :=
+	case
+		zustand = BereitZumLaden & lichtschranke.zustand = on : down;
+		zustand = geladen : down;
+		zustand = MagnetOnAbtransport : up;
+		zustand = MagnetOnZufuhr : down;
+		zustand = BereitZumEntladen : down;
+		zustand = entladen : up;
+		zustand = MagnetOffZufuhr : up;
+		zustand = MagnetOffAbtransport: down;
+	TRUE: greifer;
+	esac;
+	next(kranposition) :=
+	case
+		zustand = BereitZumLaden & lichtschranke.zustand = on : abfuhr;
+		zustand = geladen : abfuhr;
+		zustand = MagnetOnAbtransport : zufuhr;
+		zustand = MagnetOnZufuhr : zufuhr;
+		zustand = BereitZumEntladen : zufuhr;
+		zustand = entladen : zufuhr;
+		zustand = MagnetOffZufuhr : abfuhr;
+		zustand = MagnetOffAbtransport: abfuhr;
+	TRUE: kranposition;
+	esac;
+
+MODULE main
+VAR
+	zufuhrbandSensor: Sensor;
+	forderbandSensor: Sensor;
+	kranLichtschranke: Sensor;
+	kran            : Kran(kranLichtschranke);
+	arm1            : Arm1;
+	arm2            : Arm2;
+	presse          : Presse(arm1, arm2);
+	hebebuehne      : Hebebuehne(arm1, zufuhrbandSensor);
+	zufuhrband      : Zufuhrband(zufuhrbandSensor, kran, hebebuehne);
+	Forderband      : Forderband(forderbandSensor, kran, zufuhrband);
+
+--a)TODO
+SPEC AG presse.zustand = pressen -> 
+(arm1.zustand = presseein | arm1.zustand = hebeein 
+|  arm2.zustand = abfuhrein | arm2.zustand = presseein)
+--b)
+SPEC AG kran.zustand = MagnetOnZufuhr ->
+ A[zufuhrbandSensor.zustand=off U kran.greifer=up];
+--c)??
+SPEC AG kran.zustand = BereitZumEntladen -> zufuhrband.zustand = BereitZumLaden 
+SPEC AG kran.zustand = BereitZumLaden -> Forderband.zustand = BereitZumEntladen 
+--d)
+SPEC AG arm1.magnet = off -> arm1.zustand = presseaus
+--e)
+SPEC AG arm2.magnet = off -> arm2.zustand = abfuhraus
+--f)
+SPEC AG kran.magnet = off -> (kran.kranposition=zufuhr & kran.greifer=up)
+
+
